@@ -1,0 +1,244 @@
+데이터베이스 - 파일시스템의 문제점을 극복하려고 
+              1.데이터의 무결성
+              2.데이터의 중복성 배제 
+
+              학생들의 정보, 기초정보, 학업정보 
+              학과명   사회대  통계학과
+                      자연대  계산통계학과
+                      사회대 
+                      자연대  전자계산학과
+    RDBMS - Relational Database Management System
+            관계형 디비(데이터를 테이블의 형태로 , 
+             행과 열의 관계로 )
+    오라클 - 오라클사가 만들었음 전세계에서 가장 많이, 유료  
+    mssql - ms사가 만들었음, 유료
+    mysql - mysql, 무료였는데  오라클사로 넘어감(유료로 바뀜)
+            무료)mysql 근무자들이 -> mariadb 를 만들었음 
+
+RDBMS 디비를 생성하고 삭제하고 관리하는 프로그램 
+DBMS -데이터베이스 매니지먼트 시스템(프로그램)
+DBA - 데이터베이스 관리자 (Administrator)
+DB - 실제 데이터  
+
+관계형 데이터베이스 
+  행, 열, 테이블 
+
+  근로자정보 -> 모델링 
+  인사, 급여정보 
+        테이블 - 여러개의 열이 있고 각 열에대해서 값들이 존재하고 
+        사원번호,      이름,    부서,        업무, 직급, ......
+           (열)        (열)
+        202007010001  홍길동  01 
+                             행정안전부 
+                             안전행정부 
+
+        부서테이블        부서테이블_history
+        코드  부서명       01  20120101 행정안전부 
+        01    행정안전부            
+
+1. 중복성 배제 
+2. 무결성(결함이 없는)
+   사원테이블에 중복된 사원번호 
+   부서테이블에 중복된 중복된 부서코드
+
+   primary key(주키)-특정 필드의 값이 중복되거나, 값이 없으면
+                    안되는 경우 primary key로 지정가능하다
+   한테이블의 하나의 주키만 지정가능하다.
+   주키로 지정가능한 필드가 여러개 있더라도, 전부를 지정할 
+   필요는 없고 그중에 하나 젤 중요한 요소를 primary key로
+   지정할 수 있고, 때로는 여러개의 필드를 묶어서 하나의 primary
+   key로 지정할 수도 있다. 
+
+   foreign key(외부키) - 테이블과 테이블이 참조 관계에 있을때 
+   예를들어  사원정보테이블과 부서테이블의 경우 
+   사원정보테이블에서 사용할 부서코드는 부서테이블에 존재해야만 
+   한다. 부서테이블에 없는 부서코드를 사원정보에 할당하면 안된다
+   그리고 사원정보에서 이미 사용하고있는 부서코드를 부서테이블에서
+   함부로 삭제하거나 코드자체를 수정할 수 없다. 
+   이런 오류를 막기 위해서 두 테이블사이에 foreign key를 지정할 
+   수 있다. 두개의테이블이 서로 데이터를 함부로 수정,삭제,삽입
+   하는것을 막아서 사전에 오류를 차단할 수 있다. 
+   외부키로 지정될 필드는 primary key나 unique 제약조건을 
+   갖고 있어야 한다.   
+               
+
+CREATE TABLE guestbook (
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	title VARCHAR(300) NULL DEFAULT NULL,
+	contents LONGTEXT NULL DEFAULT NULL,
+	writer VARCHAR(50) NULL DEFAULT NULL,
+	wdate DATE NULL DEFAULT NULL,
+	PRIMARY KEY (id)
+);
+
+--테이블 구조 명령어 
+desc guestbook; 
+
+--내가 갖고 있는 테이블들 다 확인하기 
+show tables;
+
+--테이블에 데이터 삽입
+insert into guestbook(title, writer, wdate, contents)
+values('제목1', '작성자1', now(), '내용1');
+
+select * from guestbook; 
+
+now -함수, 현재 서버의 시간과날짜 
+오라클 - sysdate, myssql - getdate
+오라클 now 
+쿼리 - ddl, dml, dcl 
+ddl - Data Definition Language
+ (create, drop, alter)
+dml - Data Manipulation Language
+ (select, insert, delete, update)
+dcl - Data Control Language
+ 권한관련( grant )
+
+--회원테이블
+drop table member;
+create table member(
+    member_id varchar(50) not null, 
+    password  varchar(50) not null, 
+    username  varchar(50) not null, 
+    phone     varchar(20),
+    email     varchar(40),
+    wdate     date
+);
+
+--db에서는 "" X, ''
+insert into member(member_id, password, username, wdate)
+values('test1', '1234', '홍길동', now());
+insert into member(member_id, password, username, wdate)
+values('test1', '1234', '임꺽정', now());
+
+-- 내가 primary key로 지정하려는 필드에 이미 중복값이나 
+-- NULL값이 들어가 있으면 지정못함 
+alter table member add constraint PK_MEMBER 
+primary key(member_id);
+-- Duplicate entry 'test1' for key 'PRIMARY'
+
+--데이터 삭제 
+delete from member where username='임꺽정';
+
+alter table member add constraint PK_MEMBER 
+primary key(member_id);
+
+
+insert into member(member_id, password, username, wdate)
+values('test1', '1234', '임꺽정', now());
+Duplicate entry 'test1' for key 'PRIMARY'
+
+insert into member(member_id, password, username, wdate)
+values('test2', '1234', '임꺽정', now());
+
+insert into member(member_id, password, username, wdate)
+values('test3', '1234', '장길산', now());
+
+insert into member(member_id, password, username, wdate)
+values('test4', '1234', '홍명희', now());
+
+select * from member;
+
+select member_id, password from member;
+
+
+guestbook테이블에 writer 필드랑 member_id 를 연결 
+회원게시판 
+
+--gestbook테이블 내용 지우기 
+delete from guestbook; 
+
+member 테이블을 guestbook테이블이 참조한다 
+제약조건 이름 : FK_GUEST_MEMBER 
+
+guestbook의 writer필드가 member테이블의 member_id를 참조
+alter table guestbook add constraint FK_GUEST_MEMBER
+foreign key(writer) references member (member_id);
+
+insert into guestbook(title, writer, wdate, contents)
+values('제목1', 'test1', now(), '내용1');
+
+-- foreign key 위배 
+insert into guestbook(title, writer, wdate, contents)
+values('제목2', 'user01', now(), '내용2');
+
+--사원정보:번호, 이름, 급여, 입사일, 보너스, 부서번호 
+  create table emp( empno  int(10) not null, 
+                              ename varchar(40) not null,
+                              sal        int(10),
+                              hiredate  date, 
+                             comm   int(10), 
+                             deptno   char(2),
+		     primary key(empno)
+   );
+
+insert into emp(empno, ename, sal, hiredate, comm, deptno)
+values(100, '최영숙', 6600, '2012-01-01',500, 10);
+insert into emp(empno, ename, sal, hiredate, comm, deptno)
+values(101, '박지민', 4000, '2019-02-01',NULL, 20);
+insert into emp(empno, ename, sal, hiredate, comm, deptno)
+values(102, '백지현', 5000, '2017-03-04',null, 30);
+insert into emp(empno, ename, sal, hiredate, comm, deptno)
+values(103, '최경수', 4700, '2012-01-01',500, 10);
+insert into emp(empno, ename, sal, hiredate, comm, deptno)
+values(104, '이근희', 5200, '2013-01-01',1000, 20);
+
+create table dpart( deptno int(3) not null, 
+                    dname varchar(20) not null,
+                    primary key(deptno));
+
+insert into dpart values(10, '마케팅');
+insert into dpart values(20, '기획팀');
+insert into dpart values(30, '개발팀');
+insert into dpart values(40, '운영팀');
+
+emp 테이블의 deptno 가 dpart 테이블의 deptno를 참조
+
+--컬럼의 타입 변경하기 
+alter table emp modify deptno int(3);
+
+alter table emp add constraint FK_EMP_DPART
+foreign key(deptno) references dpart (deptno);
+
+
+
+
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
