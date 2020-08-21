@@ -25,11 +25,11 @@ class WeekPayMgr:
 
     def __init__(self):
         # self.dataList.append(
-        #     WeekPayData("허재", 40, 10000))
+        #     WeekPayData("Tonylee", 40, 10000))
         # self.dataList.append(
-        #     WeekPayData("최동원", 40, 40000))
+        #     WeekPayData("Ruhulamin", 40, 40000))
         # self.dataList.append(
-        #     WeekPayData("박정태", 30, 15000))
+        #     WeekPayData("James", 30, 15000))
         self.load()
         
     def output(self):
@@ -38,17 +38,17 @@ class WeekPayMgr:
             item.print() 
 
     def menuDisplay(self):
-        print("1.추가")
-        print("2.출력")
-        print("3.정렬")
-        print("4.불러오기")
-        print("5.저장하기")
-        print("0.종료")
+        print("1.Add")
+        print("2.Print")
+        print("3.Beautify")
+        print("4.Import")
+        print("5.Save")
+        print("0.Exit")
         
     def start(self):
         while(True):
             self.menuDisplay()
-            sel = input("선택 : ")
+            sel = input("Select : ")
             if sel=="1":
                 self.append() 
             elif sel=="2":
@@ -64,9 +64,9 @@ class WeekPayMgr:
 
     def append(self):
         data = WeekPayData()#새로운객체만들고 
-        data.name=input("이름 : ")
-        data.week_time=int(input("근무시간 : "))
-        data.per_pay=int(input("시간당금액"))
+        data.name=input("Name : ")
+        data.week_time=int(input("Work Hours : "))
+        data.per_pay=int(input("Hourly Wage"))
         
         self.dataList.append(data)
 
@@ -79,11 +79,11 @@ class WeekPayMgr:
 
     def load(self):
         try:
-            f = open("주급.bin", "rb")
+            f = open("Weeklypay.bin", "rb")
             self.dataList = pickle.load(f)
             f.close()
         except IOError:
-            print("아직 데이터파일이 안만들어졌음")
+            print("DB entry yet to be made")
 
     def save(self):
         f = open("주급.bin", "wb")
